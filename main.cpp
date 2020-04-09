@@ -93,7 +93,7 @@ struct Wrapper<Point>
 
 // Single-template-parameter version
 template<typename T>
-void variadicHelper(T first)
+void variadicHelper(T&& first)
 {
     Wrapper wrapper ( std::forward<T>(first) ); // Instantiate/fwd first to wrapper
     wrapper.print();
@@ -102,7 +102,7 @@ void variadicHelper(T first)
 
 // Variadic-template version
 template<typename T, typename ...Args>
-void variadicHelper(T first, Args ... everythingElse)
+void variadicHelper(T&& first, Args&& ... everythingElse)
 { 
     
     Wrapper wrapper ( std::forward<T>(first) ); // Instantiate/fwd first to wrapper
