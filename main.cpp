@@ -116,5 +116,6 @@ void variadicHelper(T first, Args ... everythingElse)
 
 int main()
 {
+    // Main call
     variadicHelper( 3, std::string("burgers"), 2.5, Point{3.f, 0.14f} );
 }
