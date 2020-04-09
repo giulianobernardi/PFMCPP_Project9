@@ -19,6 +19,7 @@ Commit your changes by clicking on the Source Control panel on the left, enterin
 #include <iostream>
 #include <string>
 #include <typeinfo>
+#include <utility>
 
 struct Point
 {
@@ -43,18 +44,78 @@ private:
     float x{0}, y{0};
 };
 
+// --------------------------------------------------
+//               Wrapper class templates
+// --------------------------------------------------
+
+// Templated Wrapper struct
 template<typename Type>
 struct Wrapper
 {
     Wrapper(Type&& t) : val(std::move(t)) 
     { 
+        std::cout << "TypeID: "; 
         std::cout << "Wrapper(" << typeid(val).name() << ")" << std::endl; 
     }
+    void print() 
+    {
+        std::cout << "Value: "; 
+        std::cout << "Wrapper::print(" << val << ")" << std::endl; 
+        std::cout << "------------------------" << std::endl; 
+    }    
+
+    Type val;
+
 };
+
+// Templated specialization of Wrapper struct for Point
+template<>
+struct Wrapper<Point>
+{
+    Wrapper(Point&& t) : val(std::move(t)) 
+    { 
+        std::cout << "TypeID: "; 
+        std::cout << "Wrapper(" << typeid(val).name() << ")" << std::endl; 
+    }
+    void print() 
+    { 
+        std::cout << "Value: "; 
+        std::cout << "Wrapper::print(" << val.toString() << ")" << std::endl; 
+        std::cout << "------------------------" << std::endl; 
+    }
+
+    Point val;
+};
+
+// --------------------------------------------------
+//               Variadic templates
+// --------------------------------------------------
+
+// Single-template-parameter version
+template<typename T>
+void variadicHelper(T&& first)
+{
+    Wrapper wrapper ( std::forward<T>(first) ); // Instantiate/fwd first to wrapper
+    wrapper.print();
+    std::cout << "Last recursive call!" << std::endl;
+}
+
+// Variadic-template version
+template<typename T, typename ...Args>
+void variadicHelper(T&& first, Args&& ... everythingElse)
+{ 
+    
+    Wrapper wrapper ( std::forward<T>(first) ); // Instantiate/fwd first to wrapper
+    wrapper.print();
+    variadicHelper( std::forward<Args>(everythingElse) ... ); // Call variadic helper forwarding everythingElse
+}
+
+// --------------------------------------------------
+//                      Main
+// --------------------------------------------------
 
 int main()
 {
+    // Main call
     variadicHelper( 3, std::string("burgers"), 2.5, Point{3.f, 0.14f} );
 }
-
-
